@@ -22,29 +22,38 @@ namespace DoD_23_24
     public class World
     {
 
-        Level level;
-        Player playerInstance;
+        //Level level;
+        //Player playerInstance;
+
+        Farm farm;
 
         public World()
         {
-            level = new Level("Content/map.tmx", "Tiny Adventure Pack\\");
-            playerInstance = new Player("2D/Sprites/Item", new Vector2(100, 100), new Vector2(16, 16), true, level);
+            //level = new Level("Content/map.tmx", "Tiny Adventure Pack\\");
+            //playerInstance = new Player("2D/Sprites/Item", new Vector2(100, 100), new Vector2(16, 16), true, level);
+
+            farm = new Farm();
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            playerInstance.Update(gameTime);
+            //playerInstance.Update(gameTime);
+
+            farm.Update(gameTime);
         }
 
         public virtual void Draw()
         {
-            level.Draw();
-            playerInstance.Draw();
+            //level.Draw();
+            //playerInstance.Draw();
+
+            farm.Draw();
         }
 
         public Player GetPlayer()
         {
-            return playerInstance;
+            //return playerInstance;
+            return farm.GetFarmPlayer();
         }
     }
 }

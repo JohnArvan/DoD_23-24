@@ -17,7 +17,8 @@ namespace DoD_23_24
 {
 	public class Player : Basic2D
 	{
-        float speed = 50f;
+        //Farm had to make speed public 
+        public float speed = 50f;
         Matrix translation;
         public Rectangle playerBounds;
         private float zoom = 2.0f;
