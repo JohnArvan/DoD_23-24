@@ -15,6 +15,7 @@ namespace DoD_23_24
         FarmPlayer playerInstance;
         FarmPlayer bigBroInstance;
         FarmPlayer lilBroInstance;
+        Farmer farmer;
         private bool switchingPlayer = true;
 
         public Farm()
@@ -23,11 +24,13 @@ namespace DoD_23_24
             playerInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(100, 100), new Vector2(16, 16), true, level);
             playerInstance.ChangeCurrentPlayer();
 
-            bigBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(100, 100), new Vector2(32, 32), true, level);
-            bigBroInstance.ChangeSpeed(0.5f);
+            bigBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(80, 100), new Vector2(20, 20), true, level);
+            bigBroInstance.ChangeSpeed(0.75f);
 
-            lilBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(100, 100), new Vector2(8, 8), true, level);
-            lilBroInstance.ChangeSpeed(2);
+            lilBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(120, 100), new Vector2(12, 12), true, level);
+            lilBroInstance.ChangeSpeed(1.25f);
+
+            farmer = new Farmer("2D/Sprites/Item", new Vector2(50, 150), new Vector2(16, 16), true);
         }
 
         public void Update(GameTime gameTime)
@@ -35,6 +38,7 @@ namespace DoD_23_24
             playerInstance.Update(gameTime);
             bigBroInstance.Update(gameTime);
             lilBroInstance.Update(gameTime);
+            farmer.Update(gameTime);
 
             SwitchPlayer();
         }
@@ -45,6 +49,7 @@ namespace DoD_23_24
             playerInstance.Draw();
             bigBroInstance.Draw();
             lilBroInstance.Draw();
+            farmer.Draw();
         }
 
         public void SwitchPlayer()

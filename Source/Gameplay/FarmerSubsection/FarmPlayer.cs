@@ -10,6 +10,8 @@ namespace DoD_23_24
     public class FarmPlayer : Player
     {
         private bool currentPlayer = false;
+        public float xPos;
+        public float yPos;
 
         public FarmPlayer(string PATH, Vector2 POS, Vector2 DIMS, bool shouldScale, Level level) : base(PATH, POS, DIMS, shouldScale, level)
         {
