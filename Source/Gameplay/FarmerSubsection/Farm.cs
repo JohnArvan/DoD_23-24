@@ -20,7 +20,9 @@ namespace DoD_23_24
         Farmer farmer;
         private bool switchingPlayer = true;
 
-        public static Vector2 farmerTrackPos;
+        public static Vector2 farmPlayerPos;
+        public static Vector2 farmBigBroPos;
+        public static Vector2 farmLilBroPos;
 
         public Farm()
         {
@@ -34,9 +36,9 @@ namespace DoD_23_24
             lilBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(120, 100), new Vector2(12, 12), true, level);
             lilBroInstance.ChangeSpeed(1.25f);
 
-            currentPlayerInstance = playerInstance;
+            //currentPlayerInstance = playerInstance;
 
-            farmer = new Farmer("2D/Sprites/Item", new Vector2(50, 150), new Vector2(16, 16), true, level);
+            farmer = new Farmer("Tiny Adventure Pack/Other/Red_orb", new Vector2(50, 150), new Vector2(16, 16), true, level);
         }
 
         public void Update(GameTime gameTime)
@@ -48,7 +50,9 @@ namespace DoD_23_24
 
             SwitchPlayer();
 
-            farmerTrackPos = currentPlayerInstance.pos;
+            farmPlayerPos = playerInstance.pos;
+            farmBigBroPos = bigBroInstance.pos;
+            farmLilBroPos = lilBroInstance.pos;
         }
 
         public void Draw()
@@ -73,7 +77,7 @@ namespace DoD_23_24
                     playerInstance.ChangeCurrentPlayer();
                     bigBroInstance.ChangeCurrentPlayer();
 
-                    currentPlayerInstance = bigBroInstance;
+                    //currentPlayerInstance = bigBroInstance;
                 }
                 //Switch to little brother
                 else if (bigBroInstance.CheckCurrentPlayer())
@@ -81,7 +85,7 @@ namespace DoD_23_24
                     bigBroInstance.ChangeCurrentPlayer();
                     lilBroInstance.ChangeCurrentPlayer();
 
-                    currentPlayerInstance = lilBroInstance;
+                    //currentPlayerInstance = lilBroInstance;
                 }
                 //Switch to player
                 else
@@ -89,7 +93,7 @@ namespace DoD_23_24
                     lilBroInstance.ChangeCurrentPlayer();
                     playerInstance.ChangeCurrentPlayer();
 
-                    currentPlayerInstance = playerInstance;
+                    //currentPlayerInstance = playerInstance;
                 }
             }
             else if (kstate.IsKeyUp(Keys.Space) && !switchingPlayer)
