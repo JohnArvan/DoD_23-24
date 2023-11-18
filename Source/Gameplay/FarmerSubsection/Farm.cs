@@ -1,11 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿#region Includes
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
+using System.Xml.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+
+using System.Reflection.Metadata;
+
+#endregion
 
 namespace DoD_23_24
 {
@@ -38,7 +48,7 @@ namespace DoD_23_24
 
             //currentPlayerInstance = playerInstance;
 
-            farmer = new Farmer("Tiny Adventure Pack/Other/Red_orb", new Vector2(50, 150), new Vector2(16, 16), true, level);
+            farmer = new Farmer("Tiny Adventure Pack/Other/Blue_orb", new Vector2(50, 150), new Vector2(16, 16), true, level);
         }
 
         public void Update(GameTime gameTime)

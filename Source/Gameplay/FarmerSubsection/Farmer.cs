@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,15 +13,26 @@ namespace DoD_23_24
 {
     public class Farmer : Basic2D
     {
-        public float speed = 25f;
+        public float speed = 15f;
         public Rectangle farmerBounds;
         Level level;
 
         //Tracking player stuff
+        private bool isMoving = true;
         private Vector2[] playerPositions;
         private float[] distances;
         private Vector2 trackPos;
         int minIndex;
+
+        //Shooting stuff
+        private FarmerBullet bullet;
+        private float readyTimer = 3000;
+        private float readyTimeNeeded_M = 3000;     //Needs 3 seconds to prepare before shooting
+        private float shootDistance = 50;
+        private float shootCooldown = 0;
+        private float shootCooldownNeeded_M = 6000; //Needs 6 seconds to reload
+        private bool reloading = false;
+        private bool isAiming = false;
 
         public Farmer(string PATH, Vector2 POS, Vector2 DIMS, bool shouldScale, Level level) : base(PATH, POS, DIMS, shouldScale)
         {
@@ -31,44 +44,52 @@ namespace DoD_23_24
             {
                 playerPositions[i] = pos;
             }
+
+            bullet = new FarmerBullet("Tiny Adventure Pack/Other/Blue_orb", pos, new Vector2(8, 8), true, level, trackPos);
+            bullet.DisableBullet();
         }
 
         public override void Update(GameTime gameTime)
         {
-            Move(gameTime);
-
+            //If loaded, follow player
+            if (!reloading)
+            {
+                FindClosestPlayer();
+                if (isMoving)
+                {
+                    Move(gameTime);
+                }
+                ReadyShotgun(gameTime);
+            }
+            //Reload and stop moving
+            else if (shootCooldown > 0)
+            {
+                shootCooldown -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (shootCooldown <= 0)
+                {
+                    reloading = false;
+                }
+            }
+            
             base.Update(gameTime);
+
+            if (bullet.isActive)
+            {
+                bullet.Update(gameTime);
+            }
         }
 
-        //Move towards current target
-        private void Move(GameTime gameTime)
+        public override void Draw()
         {
-            FindClosestPlayer();
+            base.Draw();
 
-            Vector2 initPos = pos;
-            if (pos.X < trackPos.X - 0.5f)
+            if (bullet.isActive)
             {
-                pos.X += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                bullet.Draw();
             }
-            else if (pos.X > trackPos.X + 0.5f)
-            {
-                pos.X -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            farmerBounds.X = (int)pos.X - (int)(dims.X / 2);
-            if (level.CheckCollision(farmerBounds)) pos.X = initPos.X;
-
-            if (pos.Y < trackPos.Y - 0.5f)
-            {
-                pos.Y += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            else if (pos.Y > trackPos.Y + 0.5f)
-            {
-                pos.Y -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            farmerBounds.Y = (int)pos.Y - (int)(dims.Y / 2);
-            if (level.CheckCollision(farmerBounds)) pos.Y = initPos.Y;
         }
 
+        //Find closest of the three players
         private void FindClosestPlayer()
         {
             //Get Player's positions
@@ -83,6 +104,78 @@ namespace DoD_23_24
             //Lock on to closest player
             minIndex = Array.IndexOf(distances, distances.Min());
             trackPos = playerPositions[minIndex];
+        }
+
+        //Move towards current target
+        private void Move(GameTime gameTime)
+        {
+            Vector2 initPos = pos;
+            if (pos.X < trackPos.X - 1)
+            {
+                pos.X += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            else if (pos.X > trackPos.X + 1)
+            {
+                pos.X -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            farmerBounds.X = (int)pos.X - (int)(dims.X / 2);
+            if (level.CheckCollision(farmerBounds)) pos.X = initPos.X;
+
+            if (pos.Y < trackPos.Y - 1)
+            {
+                pos.Y += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            else if (pos.Y > trackPos.Y + 1)
+            {
+                pos.Y -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            farmerBounds.Y = (int)pos.Y - (int)(dims.Y / 2);
+            if (level.CheckCollision(farmerBounds)) pos.Y = initPos.Y;
+        }
+
+        //Prepare to fire shotgun at player
+        private void ReadyShotgun(GameTime gameTime)
+        {
+            //If player is within range, prepare to shoot
+            if ((MathF.Abs(pos.X - trackPos.X) + MathF.Abs(pos.Y - trackPos.Y)) < shootDistance)
+            {
+                //Stop moving and prepare to shoot
+                isMoving = false;
+                isAiming = true;
+                AimShotgun(gameTime);
+            }
+            else if ((MathF.Abs(pos.X - trackPos.X) + MathF.Abs(pos.Y - trackPos.Y)) < (shootDistance + 15) && isAiming)
+            {
+                AimShotgun(gameTime);
+            }
+            //If player leaves range (plus some more distance), start moving again
+            else if ((MathF.Abs(pos.X - trackPos.X) + MathF.Abs(pos.Y - trackPos.Y)) > (shootDistance + 15))
+            {
+                isMoving = true;
+                isAiming = false;
+                readyTimer = readyTimeNeeded_M;
+            }
+        }
+
+        //Aim at player while in range
+        private void AimShotgun(GameTime gameTime)
+        {
+            readyTimer -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (readyTimer <= 0)
+            {
+                ShootShotgun();
+            }
+        }
+
+        //Shoot shotgun
+        private void ShootShotgun()
+        {
+            Debug.WriteLine("pow!");
+
+            reloading = true;
+            shootCooldown = shootCooldownNeeded_M;
+
+            bullet = new FarmerBullet("Tiny Adventure Pack/Other/Red_orb", pos, new Vector2(8, 8), true, level, trackPos);
         }
     }
 }
