@@ -17,6 +17,13 @@ namespace DoD_23_24
         public Rectangle farmerBounds;
         Level level;
 
+        //Movement stuff
+        private float deltaX;
+        private float deltaY;
+        private float distanceX;
+        private float distanceY;
+        private float maxDistance;
+
         //Tracking player stuff
         private bool isMoving = true;
         private Vector2[] playerPositions;
@@ -26,11 +33,11 @@ namespace DoD_23_24
 
         //Shooting stuff
         private FarmerBullet bullet;
-        private float readyTimer = 3000;
-        private float readyTimeNeeded_M = 3000;     //Needs 3 seconds to prepare before shooting
-        private float shootDistance = 50;
+        private float readyTimer = 750;
+        private float readyTimeNeeded_M = 750;      //Needs 0.75 seconds to prepare before shooting
+        private float shootDistance = 75;
         private float shootCooldown = 0;
-        private float shootCooldownNeeded_M = 6000; //Needs 6 seconds to reload
+        private float shootCooldownNeeded_M = 3000; //Needs 3 seconds to reload
         private bool reloading = false;
         private bool isAiming = false;
 
@@ -110,25 +117,25 @@ namespace DoD_23_24
         private void Move(GameTime gameTime)
         {
             Vector2 initPos = pos;
-            if (pos.X < trackPos.X - 1)
-            {
-                pos.X += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            else if (pos.X > trackPos.X + 1)
-            {
-                pos.X -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
+
+            //Calculate the differences on X and Y axes
+            deltaX = trackPos.X - pos.X;
+            deltaY = trackPos.Y - pos.Y;
+
+            //Calculate the absolute distances
+            distanceX = Math.Abs(deltaX);
+            distanceY = Math.Abs(deltaY);
+
+            //Determine the maximum distance
+            maxDistance = Math.Max(distanceX, distanceY);
+
+            //Calculate the movement amounts for X and Y axes
+            pos.X += (deltaX / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            pos.Y += (deltaY / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            //Check collisions with level
             farmerBounds.X = (int)pos.X - (int)(dims.X / 2);
             if (level.CheckCollision(farmerBounds)) pos.X = initPos.X;
-
-            if (pos.Y < trackPos.Y - 1)
-            {
-                pos.Y += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            else if (pos.Y > trackPos.Y + 1)
-            {
-                pos.Y -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
             farmerBounds.Y = (int)pos.Y - (int)(dims.Y / 2);
             if (level.CheckCollision(farmerBounds)) pos.Y = initPos.Y;
         }

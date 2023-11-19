@@ -48,7 +48,7 @@ namespace DoD_23_24
 
             //currentPlayerInstance = playerInstance;
 
-            farmer = new Farmer("Tiny Adventure Pack/Other/Blue_orb", new Vector2(50, 150), new Vector2(16, 16), true, level);
+            farmer = new Farmer("Tiny Adventure Pack/Other/Blue_orb", new Vector2(50, 200), new Vector2(16, 16), true, level);
         }
 
         public void Update(GameTime gameTime)
