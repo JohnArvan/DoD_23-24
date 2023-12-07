@@ -7,7 +7,8 @@ public class Main : Game
 {
     private GraphicsDeviceManager _graphics;
 
-    World world;
+    //World world;
+    Farm farm;
     Canvas canvas;
 
     public Main()
@@ -33,7 +34,8 @@ public class Main : Game
         Globals.graphics = this.GraphicsDevice;
         Globals.window = this.Window;
 
-        world = new World();
+        //world = new World();
+        farm = new Farm();
         canvas = new Canvas();
     }
 
@@ -44,7 +46,8 @@ public class Main : Game
 
         // TODO: Add your update logic here
 
-        world.Update(gameTime);
+        //world.Update(gameTime);
+        farm.Update(gameTime);
         canvas.Update(gameTime);
 
         base.Update(gameTime);
@@ -55,9 +58,11 @@ public class Main : Game
         GraphicsDevice.Clear(Color.Black);
 
         //Drawing the world
-        Globals.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, transformMatrix: world.GetCamera().GetComponent<CameraComponent>().GetTranslation());
+        //Globals.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, transformMatrix: world.GetCamera().GetComponent<CameraComponent>().GetTranslation());
+        Globals.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, transformMatrix: farm.GetCamera().GetComponent<CameraComponent>().GetTranslation());
 
-        world.Draw();
+        //world.Draw();
+        farm.Draw();
 
         Globals.spriteBatch.End();
 

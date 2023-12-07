@@ -21,64 +21,85 @@ namespace DoD_23_24
 {
     public class Farm
     {
-        Level level;
+        public List<Entity> entities = new List<Entity>();
         FarmPlayer playerInstance;
         FarmPlayer bigBroInstance;
         FarmPlayer lilBroInstance;
+        Farmer farmerInstance;
+        Entity camera;
 
-        FarmPlayer currentPlayerInstance;
-        Farmer farmer;
         private bool switchingPlayer = true;
 
-        public static Vector2 farmPlayerPos;
-        public static Vector2 farmBigBroPos;
-        public static Vector2 farmLilBroPos;
+        ////public static Vector2 farmPlayerPos;
+        ////public static Vector2 farmBigBroPos;
+        ////public static Vector2 farmLilBroPos;
 
         public Farm()
         {
-            level = new Level("Content/map.tmx", "Tiny Adventure Pack\\");
-            playerInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(100, 100), new Vector2(16, 16), true, level);
+            Globals.collisionSystem = new CollisionSystem();
+            
+            playerInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(100, 100), 0.0f, new Vector2(16, 16));
             playerInstance.ChangeCurrentPlayer();
 
-            bigBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(80, 100), new Vector2(20, 20), true, level);
+            bigBroInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
             bigBroInstance.ChangeSpeed(0.75f);
 
-            lilBroInstance = new FarmPlayer("2D/Sprites/Item", new Vector2(120, 100), new Vector2(12, 12), true, level);
+            lilBroInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
             lilBroInstance.ChangeSpeed(1.25f);
 
-            //currentPlayerInstance = playerInstance;
+            farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(50, 200), 0.0f, new Vector2(16, 16));
 
-            farmer = new Farmer("Tiny Adventure Pack/Other/Blue_orb", new Vector2(50, 200), new Vector2(16, 16), true, level);
+            camera = new Entity("Camera", Layer.Camera);
+            camera.AddComponent(new CameraComponent(camera, playerInstance));
+            
+            TileMapGenerator tileMapGenerator = new TileMapGenerator("Content/map.tmx", "Tiny Adventure Pack\\");
+            entities.AddRange(tileMapGenerator.GetTiles());
+            entities.Add(playerInstance);
+            entities.Add(bigBroInstance);
+            entities.Add(lilBroInstance);
+            entities.Add(farmerInstance);
+            entities.Add(camera);
         }
 
         public void Update(GameTime gameTime)
         {
-            playerInstance.Update(gameTime);
-            bigBroInstance.Update(gameTime);
-            lilBroInstance.Update(gameTime);
-            farmer.Update(gameTime);
+            foreach (Entity entity in entities)
+            {
+                entity.Update(gameTime);
+            }
 
             SwitchPlayer();
+            
+            farmerInstance.UpdatePlayerPositions(playerInstance.GetPos(), bigBroInstance.GetPos(), lilBroInstance.GetPos());
 
-            farmPlayerPos = playerInstance.pos;
-            farmBigBroPos = bigBroInstance.pos;
-            farmLilBroPos = lilBroInstance.pos;
+            Globals.collisionSystem.Update(gameTime);
         }
 
         public void Draw()
         {
-            level.Draw();
-            playerInstance.Draw();
-            bigBroInstance.Draw();
-            lilBroInstance.Draw();
-            farmer.Draw();
+            foreach (Entity entity in entities)
+            {
+                entity.Draw();
+            }
+        }
+
+        public Entity GetCamera()
+        {
+            foreach (Entity entity in entities)
+            {
+                if (entity.name == "Camera")
+                {
+                    return entity;
+                }
+            }
+            return null;
         }
 
         public void SwitchPlayer()
         {
             var kstate = Keyboard.GetState();
 
-            if (kstate.IsKeyDown(Keys.Space) && switchingPlayer)
+            if (kstate.IsKeyDown(Keys.S) && switchingPlayer)
             {
                 switchingPlayer = !switchingPlayer;
                 //Switch to big brother
@@ -86,27 +107,24 @@ namespace DoD_23_24
                 {
                     playerInstance.ChangeCurrentPlayer();
                     bigBroInstance.ChangeCurrentPlayer();
-
-                    //currentPlayerInstance = bigBroInstance;
+                    camera.GetComponent<CameraComponent>().ChangeTarget(bigBroInstance);
                 }
                 //Switch to little brother
                 else if (bigBroInstance.CheckCurrentPlayer())
                 {
                     bigBroInstance.ChangeCurrentPlayer();
                     lilBroInstance.ChangeCurrentPlayer();
-
-                    //currentPlayerInstance = lilBroInstance;
+                    camera.GetComponent<CameraComponent>().ChangeTarget(lilBroInstance);
                 }
                 //Switch to player
                 else
                 {
                     lilBroInstance.ChangeCurrentPlayer();
                     playerInstance.ChangeCurrentPlayer();
-
-                    //currentPlayerInstance = playerInstance;
+                    camera.GetComponent<CameraComponent>().ChangeTarget(playerInstance);
                 }
             }
-            else if (kstate.IsKeyUp(Keys.Space) && !switchingPlayer)
+            else if (kstate.IsKeyUp(Keys.S) && !switchingPlayer)
             {
                 switchingPlayer = !switchingPlayer;
             }
@@ -123,6 +141,14 @@ namespace DoD_23_24
                 return bigBroInstance;
             }
             return lilBroInstance;
+        }
+
+        public void UpdateFarmerPlayerPosition()
+        {
+            
+            //farmPlayerPos = playerInstance.GetPos();
+            //farmBigBroPos = bigBroInstance.GetPos();
+            //farmLilBroPos = lilBroInstance.GetPos();
         }
     }
 }

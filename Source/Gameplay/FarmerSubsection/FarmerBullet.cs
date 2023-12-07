@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace DoD_23_24
 {
-    public class FarmerBullet : Basic2D
+    public class FarmerBullet : Entity
     {
-        public Rectangle bulletBounds;
-        private Level level;
+        TransformComponent transform;
 
         //Lifetime stuff
         public bool isActive;
@@ -28,10 +27,12 @@ namespace DoD_23_24
         private Vector2 trackPos;
         private float speed = 120;
 
-        public FarmerBullet(string PATH, Vector2 POS, Vector2 DIMS, bool shouldScale, Level level, Vector2 trackPos) : base(PATH, POS, DIMS, shouldScale)
+        public FarmerBullet(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS, Vector2 trackPos) : base(name, Layer.Player)
         {
-            bulletBounds = new Rectangle((int)pos.X - (int)(dims.X / 2), (int)pos.Y - (int)(dims.Y / 2), (int)dims.X, (int)dims.Y);
-            this.level = level;
+            transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
+            AddComponent(new RenderComponent(this, PATH));
+            AddComponent(new CollisionComponent(this, true, true));
+            
             this.trackPos = trackPos;
             isActive = true;
         }
@@ -53,8 +54,8 @@ namespace DoD_23_24
         private void Move(GameTime gameTime)
         {
             //Calculate the differences on X and Y axes
-            deltaX = trackPos.X - pos.X;
-            deltaY = trackPos.Y - pos.Y;
+            deltaX = trackPos.X - transform.pos.X;
+            deltaY = trackPos.Y - transform.pos.Y;
 
             //Calculate the absolute distances
             distanceX = Math.Abs(deltaX);
@@ -64,13 +65,13 @@ namespace DoD_23_24
             maxDistance = Math.Max(distanceX, distanceY);
 
             //Calculate the movement amounts for X and Y axes
-            pos.X += (deltaX / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            pos.Y += (deltaY / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            transform.pos.X += (deltaX / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            transform.pos.Y += (deltaY / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             //Check collisions with level
-            bulletBounds.X = (int)pos.X - (int)(dims.X / 2);
-            bulletBounds.Y = (int)pos.Y - (int)(dims.Y / 2);
-            if (level.CheckCollision(bulletBounds)) DisableBullet();
+            //bulletBounds.X = (int)pos.X - (int)(dims.X / 2);
+            //bulletBounds.Y = (int)pos.Y - (int)(dims.Y / 2);
+            //if (level.CheckCollision(bulletBounds)) DisableBullet();
         }
 
         public void DisableBullet()

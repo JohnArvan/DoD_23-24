@@ -32,5 +32,11 @@ namespace DoD_23_24
             var dy = (Globals.HEIGHT / (zoom * 2)) - (int)targetTransform.pos.Y - (int)(targetTransform.dims.Y / 2);
             return Matrix.CreateTranslation(dx, dy, 0f) * Matrix.CreateScale(zoom);
         }
+
+        //FARM ADDITION - Change current player target
+        public void ChangeTarget(Entity newTarget)
+        {
+            targetTransform = newTarget.GetComponent<TransformComponent>();
+        }
     }
 }
