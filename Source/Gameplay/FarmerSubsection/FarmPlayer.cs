@@ -67,8 +67,6 @@ namespace DoD_23_24
 
         public override void OnCollision(Entity otherEntity)
         {
-            Console.WriteLine("I'm Colliding!");
-
             if (otherEntity.name == "OverlapZone")
             {
                 InteractWithNPC(otherEntity);

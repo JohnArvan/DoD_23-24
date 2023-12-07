@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 using System.Reflection.Metadata;
+using System.Net;
 
 #endregion
 
@@ -29,10 +30,6 @@ namespace DoD_23_24
         Entity camera;
 
         private bool switchingPlayer = true;
-
-        ////public static Vector2 farmPlayerPos;
-        ////public static Vector2 farmBigBroPos;
-        ////public static Vector2 farmLilBroPos;
 
         public Farm()
         {
@@ -69,7 +66,6 @@ namespace DoD_23_24
             }
 
             SwitchPlayer();
-            
             farmerInstance.UpdatePlayerPositions(playerInstance.GetPos(), bigBroInstance.GetPos(), lilBroInstance.GetPos());
 
             Globals.collisionSystem.Update(gameTime);
@@ -141,14 +137,6 @@ namespace DoD_23_24
                 return bigBroInstance;
             }
             return lilBroInstance;
-        }
-
-        public void UpdateFarmerPlayerPosition()
-        {
-            
-            //farmPlayerPos = playerInstance.GetPos();
-            //farmBigBroPos = bigBroInstance.GetPos();
-            //farmLilBroPos = lilBroInstance.GetPos();
         }
     }
 }

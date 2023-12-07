@@ -46,7 +46,7 @@ namespace DoD_23_24
             AddComponent(new RenderComponent(this, PATH));
             AddComponent(new CollisionComponent(this, true, true));
 
-            UpdatePlayerPositions(new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0));
+            playerPositions = new Vector2[3];
 
             bullet = new FarmerBullet("Bullet", "Tiny Adventure Pack/Other/Red_orb", transform.pos, 0.0f, new Vector2(8, 8), trackPos);
             bullet.DisableBullet();
@@ -92,6 +92,7 @@ namespace DoD_23_24
             }
         }
 
+        //Get player positions
         public void UpdatePlayerPositions(Vector2 playerPos, Vector2 bigBroPos, Vector2 lilBroPos)
         {
             playerPositions[0] = playerPos;
@@ -102,10 +103,6 @@ namespace DoD_23_24
         //Find closest of the three players
         private void FindClosestPlayer()
         {
-            //Get Player's positions
-            //playerPositions[0] = Farm.farmPlayerPos;
-            //playerPositions[1] = Farm.farmBigBroPos;
-            //playerPositions[2] = Farm.farmLilBroPos;
             //Calculate distances
             distances = new float[3];
             distances[0] = MathF.Abs(transform.pos.X - playerPositions[0].X) + MathF.Abs(transform.pos.Y - playerPositions[0].Y);
@@ -184,7 +181,7 @@ namespace DoD_23_24
 
         public override void OnCollision(Entity otherEntity)
         {
-            Console.WriteLine("I'm Colliding!");
+
         }
     }
 }
