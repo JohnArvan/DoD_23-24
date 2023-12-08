@@ -35,17 +35,22 @@ namespace DoD_23_24
         {
             Globals.collisionSystem = new CollisionSystem();
             
+            //People
             playerInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(100, 100), 0.0f, new Vector2(16, 16));
             playerInstance.ChangeCurrentPlayer();
 
-            bigBroInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
+            bigBroInstance = new FarmPlayer("BigBro", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
             bigBroInstance.ChangeSpeed(0.75f);
 
-            lilBroInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
+            lilBroInstance = new FarmPlayer("LilBro", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
             lilBroInstance.ChangeSpeed(1.25f);
 
-            farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(50, 200), 0.0f, new Vector2(16, 16));
+            farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(200, 200), 0.0f, new Vector2(16, 16));
 
+            //Interactable items
+            HayBale hayBale = new HayBale("HayBale", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
+
+            //Camera
             camera = new Entity("Camera", Layer.Camera);
             camera.AddComponent(new CameraComponent(camera, playerInstance));
             
@@ -55,6 +60,7 @@ namespace DoD_23_24
             entities.Add(bigBroInstance);
             entities.Add(lilBroInstance);
             entities.Add(farmerInstance);
+            entities.Add(hayBale);
             entities.Add(camera);
         }
 
@@ -91,6 +97,7 @@ namespace DoD_23_24
             return null;
         }
 
+        //Switch player currently being controlled 
         public void SwitchPlayer()
         {
             var kstate = Keyboard.GetState();
@@ -126,6 +133,7 @@ namespace DoD_23_24
             }
         }
 
+        //Return the currently controlled player
         public FarmPlayer GetFarmPlayer()
         {
             if (playerInstance.CheckCurrentPlayer())

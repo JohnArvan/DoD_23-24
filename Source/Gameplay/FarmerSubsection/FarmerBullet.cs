@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -13,7 +14,7 @@ namespace DoD_23_24
         TransformComponent transform;
 
         //Lifetime stuff
-        public bool isActive;
+        public bool bulletActive;
         private float activeTimer = 500;
 
         //Movement stuff
@@ -32,23 +33,26 @@ namespace DoD_23_24
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
             AddComponent(new RenderComponent(this, PATH));
             AddComponent(new CollisionComponent(this, false, false));
-            
+
+            activeTimer = 500;
             this.trackPos = trackPos;
-            isActive = true;
+            bulletActive = true;
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (isActive)
+            if (bulletActive)
             {
-                base.Update(gameTime);
                 Move(gameTime);
+                //Count time bullet alive time
                 activeTimer -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 if (activeTimer <= 0)
                 {
                     DisableBullet();
                 }
             }
+            base.Update(gameTime);
+            Debug.WriteLine("BX: " + transform.pos.X + " BY: " + transform.pos.Y);
         }
 
         //Move toward position tracked by farmer
@@ -70,16 +74,22 @@ namespace DoD_23_24
             transform.pos.Y += (deltaY / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
+        //Disable bullet and move it out of bounds
         public void DisableBullet()
         {
-            isActive = false;
+            bulletActive = false;
+            transform.pos = new Vector2(0, 0);
         }
 
         public override void OnCollision(Entity otherEntity)
         {
-            if (otherEntity.name != "Farmer")
+            if (bulletActive)
             {
-                DisableBullet();
+                //For now bullet can only collide with the players, will be updated to include obstacles later
+                if (otherEntity.name == "Player" || otherEntity.name == "BigBro" || otherEntity.name == "LilBro")
+                {
+                    DisableBullet();
+                }
             }
         }
     }

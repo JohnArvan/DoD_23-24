@@ -44,11 +44,13 @@ namespace DoD_23_24
         {
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
             AddComponent(new RenderComponent(this, PATH));
-            AddComponent(new CollisionComponent(this, true, true));
+            AddComponent(new CollisionComponent(this, true, false));
 
             playerPositions = new Vector2[3];
 
-            bullet = new FarmerBullet("Bullet", "Tiny Adventure Pack/Other/Red_orb", transform.pos, 0.0f, new Vector2(8, 8), trackPos);
+            //Start bullet offscreen so as to not accidentally collide with anything
+            //(may just be a temporary fix for now)
+            bullet = new FarmerBullet("Bullet", "Tiny Adventure Pack/Other/Red_orb", new Vector2(0, 0), 0.0f, new Vector2(8, 8), trackPos);
             bullet.DisableBullet();
         }
 
@@ -76,7 +78,7 @@ namespace DoD_23_24
             
             base.Update(gameTime);
 
-            if (bullet.isActive)
+            if (bullet.bulletActive)
             {
                 bullet.Update(gameTime);
             }
@@ -85,8 +87,7 @@ namespace DoD_23_24
         public override void Draw()
         {
             base.Draw();
-
-            if (bullet.isActive)
+            if (bullet.bulletActive)
             {
                 bullet.Draw();
             }
@@ -177,11 +178,6 @@ namespace DoD_23_24
             shootCooldown = shootCooldownNeeded_M;
 
             bullet = new FarmerBullet("Bullet", "Tiny Adventure Pack/Other/Red_orb", transform.pos, 0.0f, new Vector2(8, 8), trackPos);
-        }
-
-        public override void OnCollision(Entity otherEntity)
-        {
-
         }
     }
 }

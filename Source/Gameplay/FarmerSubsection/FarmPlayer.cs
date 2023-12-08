@@ -88,6 +88,7 @@ namespace DoD_23_24
             }
         }
 
+        //Update whether this is the currently selected player for camera and movement
         public void ChangeCurrentPlayer()
         {
             currentPlayer = !currentPlayer;
