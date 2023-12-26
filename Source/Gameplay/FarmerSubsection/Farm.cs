@@ -36,19 +36,26 @@ namespace DoD_23_24
             Globals.collisionSystem = new CollisionSystem();
             
             //People
-            playerInstance = new FarmPlayer("Player", "2D/Sprites/Item", new Vector2(100, 100), 0.0f, new Vector2(16, 16));
+            playerInstance = new("Player", "2D/Sprites/Item", new Vector2(100, 100), 0.0f, new Vector2(16, 16));
             playerInstance.ChangeCurrentPlayer();
 
-            bigBroInstance = new FarmPlayer("BigBro", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
+            bigBroInstance = new("BigBro", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
             bigBroInstance.ChangeSpeed(0.75f);
 
-            lilBroInstance = new FarmPlayer("LilBro", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
+            lilBroInstance = new("LilBro", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
             lilBroInstance.ChangeSpeed(1.25f);
 
             farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(200, 200), 0.0f, new Vector2(16, 16));
 
             //Interactable items
-            HayBale hayBale = new HayBale("HayBale", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
+            HayBale hayBale = new("HayBale", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
+
+            //Static items
+            BrokenFence brokenFence1L = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(50, 150), 0.0f, new Vector2(16, 16));
+            Entity brokenFence1C = new Entity("RandomThing", Layer.Tiles);
+            brokenFence1C.AddComponent(new TransformComponent(brokenFence1C, new Vector2(66, 150), 0.0f, new Vector2(12, 16)));
+            brokenFence1C.AddComponent(new RenderComponent(brokenFence1C, "Tiny Adventure Pack/Other/Misc/Rock"));
+            BrokenFence brokenFence1R = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(78, 150), 0.0f, new Vector2(16, 16));
 
             //Camera
             camera = new Entity("Camera", Layer.Camera);
@@ -61,6 +68,9 @@ namespace DoD_23_24
             entities.Add(lilBroInstance);
             entities.Add(farmerInstance);
             entities.Add(hayBale);
+            entities.Add(brokenFence1L);
+            entities.Add(brokenFence1C);
+            entities.Add(brokenFence1R);
             entities.Add(camera);
         }
 

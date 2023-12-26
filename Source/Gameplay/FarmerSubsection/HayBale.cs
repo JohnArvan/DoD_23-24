@@ -12,10 +12,10 @@ namespace DoD_23_24
     {
         TransformComponent transform;
 
-        public HayBale(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS) : base(name, Layer.Player)
+        public HayBale(string name, Vector2 POS, float ROT, Vector2 DIMS) : base(name, Layer.Player)
         {
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
-            AddComponent(new RenderComponent(this, PATH));
+            AddComponent(new RenderComponent(this, "Tiny Adventure Pack/Other/Coin"));
             AddComponent(new CollisionComponent(this, true, false));
         }
 
