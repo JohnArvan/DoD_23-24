@@ -50,16 +50,16 @@ namespace DoD_23_24
             farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(200, 200), 0.0f, new Vector2(16, 16));
 
             //Interactable items
-            HayBale hayBale = new("HayBale", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
+            //HayBale hayBale = new("HayBale", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
 
-            Rock rock = new("Rock", new Vector2(150, 150), 0.0f, new Vector2(8, 8));
+            Rock rock1 = new("Rock", new Vector2(150, 150), 0.0f, new Vector2(8, 8));
 
             //Static items
-            BrokenFence brokenFence1L = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(50, 150), 0.0f, new Vector2(16, 16));
-            Entity brokenFence1C = new Entity("RandomThing", Layer.Tiles);
-            brokenFence1C.AddComponent(new TransformComponent(brokenFence1C, new Vector2(66, 150), 0.0f, new Vector2(12, 16)));
-            brokenFence1C.AddComponent(new RenderComponent(brokenFence1C, "Tiny Adventure Pack/Other/Misc/Rock"));
-            BrokenFence brokenFence1R = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(78, 150), 0.0f, new Vector2(16, 16));
+            //BrokenFence brokenFence1L = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(50, 150), 0.0f, new Vector2(16, 16));
+            //Entity brokenFence1C = new Entity("RandomThing", Layer.Tiles);
+            //brokenFence1C.AddComponent(new TransformComponent(brokenFence1C, new Vector2(66, 150), 0.0f, new Vector2(12, 16)));
+            //brokenFence1C.AddComponent(new RenderComponent(brokenFence1C, "Tiny Adventure Pack/Other/Misc/Rock"));
+            //BrokenFence brokenFence1R = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(78, 150), 0.0f, new Vector2(16, 16));
 
             //Camera
             camera = new Entity("Camera", Layer.Camera);
@@ -71,12 +71,12 @@ namespace DoD_23_24
             entities.Add(bigBroInstance);
             entities.Add(lilBroInstance);
             entities.Add(farmerInstance);
-            entities.Add(hayBale);
-            entities.Add(rock);
-            entities.Add(rock.GetOverlapZone());
-            entities.Add(brokenFence1L);
-            entities.Add(brokenFence1C);
-            entities.Add(brokenFence1R);
+            //entities.Add(hayBale);
+            entities.Add(rock1);
+            entities.Add(rock1.GetOverlapZone());
+            //entities.Add(brokenFence1L);
+            //entities.Add(brokenFence1C);
+            //entities.Add(brokenFence1R);
             entities.Add(camera);
         }
 

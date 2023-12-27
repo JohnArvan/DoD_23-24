@@ -101,7 +101,7 @@ namespace DoD_23_24
                 }
                 else if (otherEntity.name == "OverlapZone" && otherEntity.layer == Layer.Item)
                 {
-                    PickUpRock(otherEntity);
+                    InteractWithRock(otherEntity);
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace DoD_23_24
             }
         }
 
-        public void PickUpRock(Entity overlapZone)
+        public void InteractWithRock(Entity overlapZone)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !isPressed && !holdingRock)
             {

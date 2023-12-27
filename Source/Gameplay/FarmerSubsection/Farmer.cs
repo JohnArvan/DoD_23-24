@@ -15,6 +15,8 @@ namespace DoD_23_24
     {
         public float speed = 15f;
         TransformComponent transform;
+        //Component used by rock to trigger distraction
+        FarmerComponent farmerComponent;
 
         //Movement stuff
         private float deltaX;
@@ -28,7 +30,8 @@ namespace DoD_23_24
         private Vector2[] playerPositions;
         private float[] distances;
         private Vector2 trackPos;
-        int minIndex;
+        private int minIndex;
+        private bool isSeekingPlayer = true;
 
         //Shooting stuff
         private FarmerBullet bullet;
@@ -48,6 +51,8 @@ namespace DoD_23_24
 
             playerPositions = new Vector2[3];
 
+            farmerComponent = (FarmerComponent)AddComponent(new FarmerComponent(this, this));
+
             //Start bullet offscreen so as to not accidentally collide with anything
             //(may just be a temporary fix for now)
             bullet = new FarmerBullet("Bullet", "Tiny Adventure Pack/Other/Red_orb", new Vector2(0, 0), 0.0f, new Vector2(8, 8), trackPos);
@@ -56,10 +61,14 @@ namespace DoD_23_24
 
         public override void Update(GameTime gameTime)
         {
-            //If loaded, follow player
+            //If loaded, follow track position
             if (!reloading)
             {
-                FindClosestPlayer();
+                //If looking for player, find closest player and move toward them
+                if (isSeekingPlayer)
+                {
+                    FindClosestPlayer();
+                }
                 if (isMoving)
                 {
                     Move(gameTime);
@@ -93,7 +102,7 @@ namespace DoD_23_24
             }
         }
 
-        //Get player positions
+        //Get player positions from Farm
         public void UpdatePlayerPositions(Vector2 playerPos, Vector2 bigBroPos, Vector2 lilBroPos)
         {
             playerPositions[0] = playerPos;
@@ -133,9 +142,37 @@ namespace DoD_23_24
             transform.pos.Y += (deltaY / maxDistance) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
+        //Trigger a distraction for the farmer to check 
+        //Ex: direction of rock thrown
+        public void TriggerDistraction(Vector2 pos)
+        {
+            trackPos = pos;
+            isMoving = true;
+            isAiming = false;
+            isSeekingPlayer = false;
+            readyTimer = readyTimeNeeded_M;
+        }
+
+
+        //  SHOTGUN STUFF
+
         //Prepare to fire shotgun at player
         private void ReadyShotgun(GameTime gameTime)
         {
+            //If tracking source of distraction, reach point of distraction then continue tracking player
+            if (!isSeekingPlayer)
+            {
+                if ((MathF.Abs(transform.pos.X - trackPos.X) + MathF.Abs(transform.pos.Y - trackPos.Y)) > 10)
+                {
+                    return;
+                }
+                else
+                {
+                    isSeekingPlayer = true;
+                }
+            }
+
+            //If tracking player...
             //If player is within range, prepare to shoot
             if ((MathF.Abs(transform.pos.X - trackPos.X) + MathF.Abs(transform.pos.Y - trackPos.Y)) < shootDistance)
             {

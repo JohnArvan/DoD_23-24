@@ -23,19 +23,20 @@ namespace DoD_23_24
     {
         Entity overlapZone;
         TransformComponent transform;
-        CollisionComponent collision;
 
         private bool isMoving;
 
         private float xDir, yDir, strength;
         private float timeMoved = 0; 
         private float airtime = 0;
+        Vector2 throwPos;
+        public bool isActive = false;
 
         public Rock(string name, Vector2 POS, float ROT, Vector2 DIMS) : base(name, Layer.Item)
         {
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
             AddComponent(new RenderComponent(this, "Tiny Adventure Pack/Other/Green_orb"));
-            collision = (CollisionComponent)AddComponent(new CollisionComponent(this, false, false));
+            AddComponent(new CollisionComponent(this, false, false));
 
             overlapZone = new Entity("OverlapZone", Layer.Item);
             overlapZone.AddComponent(new TransformComponent(overlapZone, new Vector2((int)POS.X - 8, (int)POS.Y - 8), 0.0f, new Vector2(24, 24)));
@@ -73,12 +74,14 @@ namespace DoD_23_24
 
         public void GetThrown(float xDir, float yDir, float strength)
         {
+            throwPos = transform.pos;
             this.xDir = -xDir;
             this.yDir = -yDir;
             this.strength = strength;
             timeMoved = 0;
             airtime = 1;
             isMoving = true;
+            isActive = true;
         }
 
         private void Move(GameTime gameTime)
@@ -95,13 +98,26 @@ namespace DoD_23_24
 
         public override void OnCollision(Entity otherEntity)
         {
-            if (isMoving)
+            if (isMoving && isActive)
             {
                 if (otherEntity.name != "Player" && otherEntity.name != "BigBro" && otherEntity.name != "LilBro" && otherEntity.name != "OverlapZone" && otherEntity.name != "Bullet")
                 {
                     isMoving = false;
+                    isActive = false;
+                }
+                if (otherEntity.name == "Farmer")
+                {
+                    otherEntity.GetComponent<FarmerComponent>().GetParentFarmer().TriggerDistraction(throwPos);
+                    isActive = false;
                 }
             }
         }
+
+        public void DestroyRock()
+        {
+            transform.pos = new Vector2(-100, -100);
+            overlapZone.GetComponent<TransformComponent>().pos = new Vector2((int)transform.pos.X - 8, (int)transform.pos.Y - 8);
+        }
+
     }
 }
