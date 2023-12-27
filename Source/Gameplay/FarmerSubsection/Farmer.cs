@@ -44,7 +44,7 @@ namespace DoD_23_24
         {
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
             AddComponent(new RenderComponent(this, PATH));
-            AddComponent(new CollisionComponent(this, true, false));
+            AddComponent(new CollisionComponent(this, true, true));
 
             playerPositions = new Vector2[3];
 
@@ -117,8 +117,6 @@ namespace DoD_23_24
         //Move towards current target
         private void Move(GameTime gameTime)
         {
-            Vector2 initPos = transform.pos;
-
             //Calculate the differences on X and Y axes
             deltaX = trackPos.X - transform.pos.X;
             deltaY = trackPos.Y - transform.pos.Y;

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace DoD_23_24
     public class FarmPlayer : Entity
     {
         float speed = 50f;
+        float throwStrength = 50f;
         TransformComponent transform;
         bool isPressed = false;
         bool isFrozen = false;
@@ -18,6 +20,10 @@ namespace DoD_23_24
         private bool currentPlayer = false;
         public float xPos;
         public float yPos;
+
+        private bool holdingRock;
+        private float xDir;
+        private float yDir;
 
         public FarmPlayer(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS) : base(name, Layer.Player)
         {
@@ -47,29 +53,56 @@ namespace DoD_23_24
             if (kstate.IsKeyDown(Keys.Left))
             {
                 transform.pos.X -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                xDir = -1;
+                if (kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down))
+                {
+                    yDir = 0;
+                }
             }
 
             if (kstate.IsKeyDown(Keys.Right))
             {
                 transform.pos.X += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                xDir = 1;
+                if (kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down))
+                {
+                    yDir = 0;
+                }
             }
 
             if (kstate.IsKeyDown(Keys.Up))
             {
                 transform.pos.Y -= speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                yDir = -1;
+                if (kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right))
+                {
+                    xDir = 0;
+                }
             }
 
             if (kstate.IsKeyDown(Keys.Down))
             {
                 transform.pos.Y += speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                yDir = 1;
+                if (kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right))
+                {
+                    xDir = 0;
+                }
             }
         }
 
         public override void OnCollision(Entity otherEntity)
         {
-            if (otherEntity.name == "OverlapZone")
+            if (currentPlayer)
             {
-                InteractWithNPC(otherEntity);
+                if (otherEntity.name == "OverlapZone" && otherEntity.layer == Layer.NPC)
+                {
+                    InteractWithNPC(otherEntity);
+                }
+                else if (otherEntity.name == "OverlapZone" && otherEntity.layer == Layer.Item)
+                {
+                    PickUpRock(otherEntity);
+                }
             }
         }
 
@@ -88,6 +121,31 @@ namespace DoD_23_24
             }
         }
 
+        public void PickUpRock(Entity overlapZone)
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !isPressed && !holdingRock)
+            {
+                isPressed = true;
+                holdingRock = true;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Space) && !isPressed && holdingRock)
+            {
+                isPressed = true;
+                holdingRock = false;
+                overlapZone.GetComponent<OverlapZoneComponent>().GetParentRock().GetThrown(xDir, yDir, throwStrength);
+            }
+
+            if (Keyboard.GetState().IsKeyUp(Keys.Space))
+            {
+                isPressed = false;
+            }
+
+            if (holdingRock)
+            {
+                overlapZone.GetComponent<OverlapZoneComponent>().GetParentRock().FollowPlayer(transform.pos, transform.dims.X, xDir, yDir);
+            }
+        }
+
         //Update whether this is the currently selected player for camera and movement
         public void ChangeCurrentPlayer()
         {
@@ -102,6 +160,10 @@ namespace DoD_23_24
         public void ChangeSpeed(float factor)
         {
             speed *= factor;
+        }
+        public void ChangeStrength(float factor)
+        {
+            throwStrength *= factor;
         }
 
         public Vector2 GetPos()

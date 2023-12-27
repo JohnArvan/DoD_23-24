@@ -41,14 +41,18 @@ namespace DoD_23_24
 
             bigBroInstance = new("BigBro", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
             bigBroInstance.ChangeSpeed(0.75f);
+            bigBroInstance.ChangeStrength(1.25f);
 
             lilBroInstance = new("LilBro", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
             lilBroInstance.ChangeSpeed(1.25f);
+            lilBroInstance.ChangeStrength(0.75f);
 
             farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(200, 200), 0.0f, new Vector2(16, 16));
 
             //Interactable items
             HayBale hayBale = new("HayBale", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
+
+            Rock rock = new("Rock", new Vector2(150, 150), 0.0f, new Vector2(8, 8));
 
             //Static items
             BrokenFence brokenFence1L = new("BrokenFence", "Tiny Adventure Pack/Other/Misc/Rock", new Vector2(50, 150), 0.0f, new Vector2(16, 16));
@@ -68,6 +72,8 @@ namespace DoD_23_24
             entities.Add(lilBroInstance);
             entities.Add(farmerInstance);
             entities.Add(hayBale);
+            entities.Add(rock);
+            entities.Add(rock.GetOverlapZone());
             entities.Add(brokenFence1L);
             entities.Add(brokenFence1C);
             entities.Add(brokenFence1R);

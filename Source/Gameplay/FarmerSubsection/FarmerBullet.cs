@@ -52,7 +52,6 @@ namespace DoD_23_24
                 }
             }
             base.Update(gameTime);
-            Debug.WriteLine("BX: " + transform.pos.X + " BY: " + transform.pos.Y);
         }
 
         //Move toward position tracked by farmer

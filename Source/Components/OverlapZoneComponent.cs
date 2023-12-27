@@ -21,9 +21,18 @@ namespace DoD_23_24
     public class OverlapZoneComponent : Component
     {
         NPC parentNPC;
+        //Farm addition
+        Rock parentRock;
+
         public OverlapZoneComponent(Entity entity, NPC parent) : base(entity)
         {
             parentNPC = parent;
+        }
+
+        //Farm addition
+        public OverlapZoneComponent(Entity entity, Rock rock) : base(entity)
+        {
+            parentRock = rock;
         }
 
         public override void Update(GameTime gameTime)
@@ -34,6 +43,12 @@ namespace DoD_23_24
         public NPC GetParentNPC()
         {
             return parentNPC;
+        }
+
+        //Farm addition
+        public Rock GetParentRock()
+        {
+            return parentRock;
         }
     }
 }

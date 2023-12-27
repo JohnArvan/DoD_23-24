@@ -4,5 +4,6 @@
     Tiles,
     NPC,
     Camera,
-    UI
+    UI,
+    Item
 }
