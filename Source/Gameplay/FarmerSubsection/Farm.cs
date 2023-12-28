@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Media;
 
 using System.Reflection.Metadata;
 using System.Net;
+using System.Diagnostics;
 
 #endregion
 
@@ -23,6 +24,8 @@ namespace DoD_23_24
     public class Farm
     {
         public List<Entity> entities = new List<Entity>();
+        List<FarmPlayer> farmPlayers;
+        int currentPlayerIndex = 0;
         FarmPlayer playerInstance;
         FarmPlayer bigBroInstance;
         FarmPlayer lilBroInstance;
@@ -36,18 +39,28 @@ namespace DoD_23_24
             Globals.collisionSystem = new CollisionSystem();
             
             //People
-            playerInstance = new("Player", "2D/Sprites/Item", new Vector2(100, 100), 0.0f, new Vector2(16, 16));
-            playerInstance.ChangeCurrentPlayer();
+            playerInstance = new("Player", "2D/Sprites/Item", new Vector2(100, 100), 0.0f, new Vector2(16, 16), this);
+            playerInstance.ChangeCurrentPlayer(true);
 
-            bigBroInstance = new("BigBro", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20));
+            bigBroInstance = new("BigBro", "2D/Sprites/Item", new Vector2(80, 100), 0.0f, new Vector2(20, 20), this);
             bigBroInstance.ChangeSpeed(0.75f);
             bigBroInstance.ChangeStrength(1.25f);
 
-            lilBroInstance = new("LilBro", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12));
+            lilBroInstance = new("LilBro", "2D/Sprites/Item", new Vector2(120, 100), 0.0f, new Vector2(12, 12), this);
             lilBroInstance.ChangeSpeed(1.25f);
             lilBroInstance.ChangeStrength(0.75f);
 
-            farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(200, 200), 0.0f, new Vector2(16, 16));
+            farmPlayers = new List<FarmPlayer>
+            {
+                playerInstance,
+                bigBroInstance,
+                lilBroInstance
+            };
+
+            farmerInstance = new Farmer("Farmer", "Tiny Adventure Pack/Other/Blue_orb", new Vector2(200, 200), 0.0f, new Vector2(16, 16), farmPlayers);
+            playerInstance.SetFarmer(farmerInstance);
+            bigBroInstance.SetFarmer(farmerInstance);
+            lilBroInstance.SetFarmer(farmerInstance);
 
             //Interactable items
             //HayBale hayBale = new("HayBale", new Vector2(100, 200), 0.0f, new Vector2(16, 16));
@@ -88,7 +101,7 @@ namespace DoD_23_24
             }
 
             SwitchPlayer();
-            farmerInstance.UpdatePlayerPositions(playerInstance.GetPos(), bigBroInstance.GetPos(), lilBroInstance.GetPos());
+            //farmerInstance.UpdatePlayerPositions(playerInstance, bigBroInstance, lilBroInstance);
 
             Globals.collisionSystem.Update(gameTime);
         }
@@ -120,33 +133,41 @@ namespace DoD_23_24
 
             if (kstate.IsKeyDown(Keys.S) && switchingPlayer)
             {
-                switchingPlayer = !switchingPlayer;
-                //Switch to big brother
-                if (playerInstance.CheckCurrentPlayer())
-                {
-                    playerInstance.ChangeCurrentPlayer();
-                    bigBroInstance.ChangeCurrentPlayer();
-                    camera.GetComponent<CameraComponent>().ChangeTarget(bigBroInstance);
-                }
-                //Switch to little brother
-                else if (bigBroInstance.CheckCurrentPlayer())
-                {
-                    bigBroInstance.ChangeCurrentPlayer();
-                    lilBroInstance.ChangeCurrentPlayer();
-                    camera.GetComponent<CameraComponent>().ChangeTarget(lilBroInstance);
-                }
-                //Switch to player
-                else
-                {
-                    lilBroInstance.ChangeCurrentPlayer();
-                    playerInstance.ChangeCurrentPlayer();
-                    camera.GetComponent<CameraComponent>().ChangeTarget(playerInstance);
-                }
+                SwitchToNextPlayer(false);
             }
             else if (kstate.IsKeyUp(Keys.S) && !switchingPlayer)
             {
-                switchingPlayer = !switchingPlayer;
+                switchingPlayer = true;
             }
+        }
+
+        public void SwitchToNextPlayer(bool isDead)
+        {
+            //All players are dead, do something
+            if (farmPlayers.Count == 0)
+            {
+                Debug.WriteLine("everyone died");
+                return;
+            }
+
+            //If called from user switching players, update previous and new player
+            //If called from a player dying, update only new player (because previous is removed from list)
+            if (!isDead)
+            {
+                switchingPlayer = false;
+                farmPlayers[currentPlayerIndex].ChangeCurrentPlayer(false);
+                currentPlayerIndex = (currentPlayerIndex + 1) % farmPlayers.Count;
+            }
+            else
+            {
+                if (currentPlayerIndex >= farmPlayers.Count)
+                {
+                    currentPlayerIndex = 0;
+                }
+            }
+            
+            farmPlayers[currentPlayerIndex].ChangeCurrentPlayer(true);
+            camera.GetComponent<CameraComponent>().ChangeTarget(farmPlayers[currentPlayerIndex]);
         }
 
         //Return the currently controlled player

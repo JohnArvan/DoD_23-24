@@ -25,11 +25,17 @@ namespace DoD_23_24
         private float xDir;
         private float yDir;
 
-        public FarmPlayer(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS) : base(name, Layer.Player)
+        public bool isAlive = true;
+        private Farm farm;
+        private Farmer farmer;
+        public int playerIndex;
+
+        public FarmPlayer(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS, Farm farm) : base(name, Layer.Player)
         {
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
             AddComponent(new RenderComponent(this, PATH));
             AddComponent(new CollisionComponent(this, true, true));
+            this.farm = farm;
         }
 
         public override void Update(GameTime gameTime)
@@ -104,6 +110,16 @@ namespace DoD_23_24
                     InteractWithRock(otherEntity);
                 }
             }
+
+            //Kill player
+            if (otherEntity.name == "Bullet" && isAlive)
+            {
+                Debug.WriteLine(name + " is dead :(");
+                isAlive = false;
+                currentPlayer = false;
+                farmer.RemovePlayerFromList(this);
+                farm.SwitchToNextPlayer(true);
+            }
         }
 
         public void InteractWithNPC(Entity overlapZone)
@@ -147,9 +163,9 @@ namespace DoD_23_24
         }
 
         //Update whether this is the currently selected player for camera and movement
-        public void ChangeCurrentPlayer()
+        public void ChangeCurrentPlayer(bool value)
         {
-            currentPlayer = !currentPlayer;
+            currentPlayer = value;
         }
 
         public bool CheckCurrentPlayer()
@@ -157,10 +173,16 @@ namespace DoD_23_24
             return currentPlayer;
         }
 
+        public bool CheckAlive()
+        {
+            return isAlive;
+        }
+
         public void ChangeSpeed(float factor)
         {
             speed *= factor;
         }
+
         public void ChangeStrength(float factor)
         {
             throwStrength *= factor;
@@ -169,6 +191,11 @@ namespace DoD_23_24
         public Vector2 GetPos()
         {
             return new Vector2(transform.pos.X, transform.pos.Y);
+        }
+
+        public void SetFarmer(Farmer farmer)
+        {
+            this.farmer = farmer;
         }
     }
 }

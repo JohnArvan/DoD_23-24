@@ -76,8 +76,8 @@ namespace DoD_23_24
         //Disable bullet and move it out of bounds
         public void DisableBullet()
         {
+            transform.pos = new Vector2(-100, -100);
             bulletActive = false;
-            transform.pos = new Vector2(0, 0);
         }
 
         public override void OnCollision(Entity otherEntity)

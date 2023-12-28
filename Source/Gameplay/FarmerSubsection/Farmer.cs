@@ -27,7 +27,7 @@ namespace DoD_23_24
 
         //Tracking player stuff
         private bool isMoving = true;
-        private Vector2[] playerPositions;
+        private List<FarmPlayer> players;
         private float[] distances;
         private Vector2 trackPos;
         private int minIndex;
@@ -40,16 +40,16 @@ namespace DoD_23_24
         private float shootDistance = 75;
         private float shootCooldown = 0;
         private float shootCooldownNeeded_M = 3000; //Needs 3 seconds to reload
-        private bool reloading = false;
+        private bool isReloading = false;
         private bool isAiming = false;
 
-        public Farmer(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS) : base(name, Layer.Player)
+        public Farmer(string name, string PATH, Vector2 POS, float ROT, Vector2 DIMS, List<FarmPlayer> players) : base(name, Layer.Player)
         {
             transform = (TransformComponent)AddComponent(new TransformComponent(this, POS, ROT, DIMS));
             AddComponent(new RenderComponent(this, PATH));
             AddComponent(new CollisionComponent(this, true, true));
 
-            playerPositions = new Vector2[3];
+            this.players = players;
 
             farmerComponent = (FarmerComponent)AddComponent(new FarmerComponent(this, this));
 
@@ -62,7 +62,7 @@ namespace DoD_23_24
         public override void Update(GameTime gameTime)
         {
             //If loaded, follow track position
-            if (!reloading)
+            if (!isReloading)
             {
                 //If looking for player, find closest player and move toward them
                 if (isSeekingPlayer)
@@ -81,7 +81,7 @@ namespace DoD_23_24
                 shootCooldown -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 if (shootCooldown <= 0)
                 {
-                    reloading = false;
+                    isReloading = false;
                 }
             }
             
@@ -103,24 +103,51 @@ namespace DoD_23_24
         }
 
         //Get player positions from Farm
-        public void UpdatePlayerPositions(Vector2 playerPos, Vector2 bigBroPos, Vector2 lilBroPos)
+        public void UpdatePlayerPositions(FarmPlayer player, FarmPlayer bigBro, FarmPlayer lilBro)
         {
-            playerPositions[0] = playerPos;
-            playerPositions[1] = bigBroPos;
-            playerPositions[2] = lilBroPos;
+            //playerPositions = new List<Vector2>();
+
+            if (player.CheckAlive())
+            {
+                //players.Add(player.GetPos());
+            }
+            if (bigBro.CheckAlive())
+            {
+                //players.Add(bigBro.GetPos());
+            }
+            if (lilBro.CheckAlive())
+            {
+                //players.Add(lilBro.GetPos());
+            }
+        }
+
+        public void RemovePlayerFromList(FarmPlayer player)
+        {
+            players.Remove(player);
         }
 
         //Find closest of the three players
         private void FindClosestPlayer()
         {
+            //All players dead so stop
+            if (players.Count == 0)
+            {
+                isMoving = false;
+                isReloading = false;
+                isAiming = false;
+                isSeekingPlayer = false;
+                return;
+            }
+
             //Calculate distances
-            distances = new float[3];
-            distances[0] = MathF.Abs(transform.pos.X - playerPositions[0].X) + MathF.Abs(transform.pos.Y - playerPositions[0].Y);
-            distances[1] = MathF.Abs(transform.pos.X - playerPositions[1].X) + MathF.Abs(transform.pos.Y - playerPositions[1].Y);
-            distances[2] = MathF.Abs(transform.pos.X - playerPositions[2].X) + MathF.Abs(transform.pos.Y - playerPositions[2].Y);
+            distances = new float[players.Count];
+            for (int i = 0; i < distances.Length; i++)
+            {
+                distances[i] = MathF.Abs(transform.pos.X - players[i].GetPos().X) + MathF.Abs(transform.pos.Y - players[i].GetPos().Y);
+            }
             //Lock on to closest player
             minIndex = Array.IndexOf(distances, distances.Min());
-            trackPos = playerPositions[minIndex];
+            trackPos = players.ElementAt(minIndex).GetPos();
         }
 
         //Move towards current target
@@ -209,7 +236,7 @@ namespace DoD_23_24
         {
             Debug.WriteLine("pow!");
 
-            reloading = true;
+            isReloading = true;
             shootCooldown = shootCooldownNeeded_M;
 
             bullet = new FarmerBullet("Bullet", "Tiny Adventure Pack/Other/Red_orb", transform.pos, 0.0f, new Vector2(8, 8), trackPos);
