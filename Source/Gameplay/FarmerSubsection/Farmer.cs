@@ -102,25 +102,6 @@ namespace DoD_23_24
             }
         }
 
-        //Get player positions from Farm
-        public void UpdatePlayerPositions(FarmPlayer player, FarmPlayer bigBro, FarmPlayer lilBro)
-        {
-            //playerPositions = new List<Vector2>();
-
-            if (player.CheckAlive())
-            {
-                //players.Add(player.GetPos());
-            }
-            if (bigBro.CheckAlive())
-            {
-                //players.Add(bigBro.GetPos());
-            }
-            if (lilBro.CheckAlive())
-            {
-                //players.Add(lilBro.GetPos());
-            }
-        }
-
         public void RemovePlayerFromList(FarmPlayer player)
         {
             players.Remove(player);

@@ -114,11 +114,12 @@ namespace DoD_23_24
             //Kill player
             if (otherEntity.name == "Bullet" && isAlive)
             {
+                bool isCurrent = currentPlayer;
                 Debug.WriteLine(name + " is dead :(");
                 isAlive = false;
                 currentPlayer = false;
                 farmer.RemovePlayerFromList(this);
-                farm.SwitchToNextPlayer(true);
+                farm.SwitchToNextPlayer(true, isCurrent);
             }
         }
 

@@ -133,7 +133,7 @@ namespace DoD_23_24
 
             if (kstate.IsKeyDown(Keys.S) && switchingPlayer)
             {
-                SwitchToNextPlayer(false);
+                SwitchToNextPlayer(false, true);
             }
             else if (kstate.IsKeyUp(Keys.S) && !switchingPlayer)
             {
@@ -141,12 +141,25 @@ namespace DoD_23_24
             }
         }
 
-        public void SwitchToNextPlayer(bool isDead)
+        public void SwitchToNextPlayer(bool isDead, bool isCurrent)
         {
             //All players are dead, do something
             if (farmPlayers.Count == 0)
             {
                 Debug.WriteLine("everyone died");
+                return;
+            }
+
+            if (!isCurrent)
+            {
+                if (currentPlayerIndex > farmPlayers.Count)
+                {
+                    currentPlayerIndex--;
+                }
+                else
+                {
+                    currentPlayerIndex = 0;
+                }
                 return;
             }
 
@@ -158,7 +171,7 @@ namespace DoD_23_24
                 farmPlayers[currentPlayerIndex].ChangeCurrentPlayer(false);
                 currentPlayerIndex = (currentPlayerIndex + 1) % farmPlayers.Count;
             }
-            else
+            else 
             {
                 if (currentPlayerIndex >= farmPlayers.Count)
                 {
